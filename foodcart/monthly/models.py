@@ -14,7 +14,7 @@ class Card(models.Model):
         (CARD_TYPE_SMALL_TOWN, 'Small Town')
     ]
 
-    company_id = ForeignKey(Company, on_delete=models.CASCADE)
+    company = ForeignKey(Company, on_delete=models.CASCADE)
     available_balance = models.DecimalField(max_digits=5, decimal_places=2)
     card_type = models.CharField(max_length=1, choices=CARD_TYPES)
     employee_name = models.CharField(max_length=255)
@@ -32,9 +32,9 @@ class Transaction(models.Model):
 
     # default is set to "company" if a card is deleted. 
     # Because we would want to see all transactions of a card even if it's deleted.
-    card_id = ForeignKey(Card, on_delete=models.SET_DEFAULT, default='company')
+    card = ForeignKey(Card, on_delete=models.SET_DEFAULT, default='company')
     
-    company_id = ForeignKey(Company, on_delete=models.CASCADE)
+    company = ForeignKey(Company, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=5, decimal_places=2)
     transaction_date = models.DateTimeField()
     transaction_type = models.CharField(max_length=1, choices=TRANSACTION_TYPES)
