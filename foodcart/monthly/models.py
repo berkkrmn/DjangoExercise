@@ -5,6 +5,9 @@ class Company(models.Model):
     company_name = models.CharField(max_length=255)
     funds = models.DecimalField(max_digits=11, decimal_places=2)
 
+    def __str__(self) -> str:
+        return self.company_name
+
 class Card(models.Model):
     CARD_TYPE_CITY_CENTER = 'C'
     CARD_TYPE_SMALL_TOWN = 'S'
@@ -18,6 +21,9 @@ class Card(models.Model):
     available_balance = models.DecimalField(max_digits=5, decimal_places=2)
     card_type = models.CharField(max_length=1, choices=CARD_TYPES)
     employee_name = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return self.employee_name
 
 class Transaction(models.Model):
     TRANSACTION_TOP_UP = 'T'
@@ -38,4 +44,7 @@ class Transaction(models.Model):
     amount = models.DecimalField(max_digits=5, decimal_places=2)
     transaction_date = models.DateTimeField()
     transaction_type = models.CharField(max_length=1, choices=TRANSACTION_TYPES)
-    restaurant = models.CharField(max_length=255, null=True)
+    transaction_name = models.CharField(max_length=255, null=True)
+
+    def __str__(self) -> str:
+        return self.transaction_name
