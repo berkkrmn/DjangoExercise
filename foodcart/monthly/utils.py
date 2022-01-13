@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Q
 from monthly.models import Company, Card, Transaction
 
 
@@ -92,5 +93,36 @@ def spend_money(card_id, spend_amount, restaurant_name):
             Transaction.objects.create(company=company, card=card, amount=spend_amount, transaction_type='P', transaction_name=restaurant_name)
             return card.employee_name + ' spend ' + str(spend_amount) + ' at ' + restaurant_name
 
+    except Exception as e:
+        return str(e)
+
+def refund_purchase(transaction_id):
+    try:
+        # Get purchase information.
+        refund_transaction = Transaction.objects.get(pk=transaction_id)
+        card = refund_transaction.card
+
+        # Refund the amount to the card.
+        card.available_balance = card.available_balance + refund_transaction.amount
+        card.save()
+
+        # Convert purchase into a refund.
+        refund_transaction.transaction_type = 'R'
+        refund_transaction.save()
+
+        return str(refund_transaction.amount) + ' is refunded to ' + card.employee_name
+    except Exception as e:
+        return str(e)
+
+def get_list_of_transactions(card_id):
+    try:
+        # Get all transactions for card. (Top-Ups and Purchases).
+        # Return if the card has at least one transaction recorded.
+        card = Card.objects.get(pk=card_id)
+        transactions_list = list(Transaction.objects.filter(card=card).filter(Q(transaction_type='T') | Q(transaction_type='P')).values())
+        if len(transactions_list) == 0:
+            return 'No transactions found.'
+        else:
+            return str(transactions_list)
     except Exception as e:
         return str(e)
