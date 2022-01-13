@@ -45,7 +45,7 @@ class Transaction(models.Model):
     company = ForeignKey(Company, on_delete=models.CASCADE)
     card = ForeignKey(Card, on_delete=models.SET_DEFAULT, default=company)
     amount = models.DecimalField(max_digits=5, decimal_places=2)
-    transaction_date = models.DateTimeField()
+    transaction_date = models.DateTimeField(auto_now=True)
     transaction_type = models.CharField(max_length=1, choices=TRANSACTION_TYPES)
     transaction_name = models.CharField(max_length=255, null=True)
 
