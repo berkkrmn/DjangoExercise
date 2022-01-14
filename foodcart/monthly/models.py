@@ -31,6 +31,15 @@ class Card(models.Model):
     class Meta:
         ordering = ['employee_name']
 
+class Restaurant(models.Model):
+    restaurant_name = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return self.restaurant_name
+
+    class Meta:
+        ordering = ['restaurant_name']
+
 class Transaction(models.Model):
     TRANSACTION_TOP_UP = 'T'
     TRANSACTION_PURCHASE = 'P'
@@ -44,6 +53,7 @@ class Transaction(models.Model):
 
     company = ForeignKey(Company, on_delete=models.CASCADE)
     card = ForeignKey(Card, on_delete=models.SET_NULL, null=True)
+    restaurant = ForeignKey(Restaurant, on_delete=models.SET_NULL, null=True)
     amount = models.DecimalField(max_digits=5, decimal_places=2)
     transaction_date = models.DateTimeField(auto_now=True)
     transaction_type = models.CharField(max_length=1, choices=TRANSACTION_TYPES)
@@ -54,3 +64,4 @@ class Transaction(models.Model):
 
     class Meta:
         ordering = ['company']
+
