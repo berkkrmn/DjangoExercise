@@ -1,6 +1,6 @@
 from django.db import transaction
-from django.db.models import Q
-from monthly.models import Company, Card, Transaction
+from django.db.models import Q, Count
+from monthly.models import Company, Card, Transaction, Restaurant
 
 CITY_CENTER_CARD_TOP_UP = 500
 SMALL_TOWN_CARD_TOP_UP = 300
@@ -94,10 +94,11 @@ def top_up(card_id):
         return str(e)
 
 # Spend money on a restaurant with a card function.
-def spend_money(card_id, spend_amount, restaurant_name):
+def spend_money(card_id, spend_amount, restaurant_id):
     try:
         card = Card.objects.get(pk=card_id)
         company = card.company
+        restaurant = Restaurant.objects.get(pk=restaurant_id)
 
         if card.available_balance < spend_amount:
             return 'Not enough balance.'
@@ -105,8 +106,8 @@ def spend_money(card_id, spend_amount, restaurant_name):
             card.available_balance = card.available_balance - spend_amount
             card.save()
 
-            Transaction.objects.create(company=company, card=card, amount=spend_amount, transaction_type='P', transaction_name=restaurant_name)
-            return card.employee_name + ' spend ' + str(spend_amount) + ' at ' + restaurant_name
+            Transaction.objects.create(company=company, card=card, restaurant=restaurant, amount=spend_amount, transaction_type='P', transaction_name=restaurant.restaurant_name)
+            return card.employee_name + ' spend ' + str(spend_amount) + ' at ' + restaurant.restaurant_name
 
     except Exception as e:
         return str(e)
@@ -144,10 +145,13 @@ def get_list_of_transactions(card_id):
     except Exception as e:
         return str(e)
 
+# Get the list of most popular restaurants per month for a company method.
 def most_popular_restaurants(company_id, month):
+    company = Company.objects.get(pk=company_id)
+    restaurants = Transaction.objects.filter(company=company).filter(transaction_date__month=month).filter(transaction_type='P').annotate(purchase_count=Count('id')).order_by('purchase_count')
+    
 
-    return 'Not yet implemented.'
-    # To be implemented...
+    return str(list(restaurants.values()))
 
 # Terminate a card function.
 def terminate_card(card_id):

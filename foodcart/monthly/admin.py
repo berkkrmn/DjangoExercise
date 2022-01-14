@@ -19,6 +19,6 @@ class RestaurantAdmin(admin.ModelAdmin):
 
 @admin.register(models.Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ['id','card','restaurant','transaction_name', 'transaction_date', 'transaction_type', 'amount']
+    list_display = ['id','company','card','restaurant','transaction_name', 'transaction_date', 'transaction_type', 'amount']
     list_per_page = 50
 
