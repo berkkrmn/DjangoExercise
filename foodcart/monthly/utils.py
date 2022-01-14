@@ -6,6 +6,8 @@ CITY_CENTER_CARD_TOP_UP = 500
 SMALL_TOWN_CARD_TOP_UP = 300
 
 # Function -> Create a new company.
+# Parameters:
+#   company_name = string 
 def create_company(company_name):
     try:
         Company.objects.create(company_name=company_name)
@@ -14,6 +16,10 @@ def create_company(company_name):
         return str(e)
 
 # Function -> Create a new card for a company.
+# Parameters:
+#   company_id = integer
+#   employee_name = string
+#   contract_type = string -> Accepts 'S' or 'C' as values.
 def create_card(company_id, employee_name, contract_type):
     if contract_type == 'S' | contract_type == 'C':
         try:
@@ -29,6 +35,8 @@ def create_card(company_id, employee_name, contract_type):
         return 'Invalid contract_type.'
         
 # Function -> Get the list of cards of a company.
+# Parameters:
+#   company_id = integer
 def get_list_of_cards(company_id):
     try:
         company = Company.objects.get(pk=company_id)
@@ -41,7 +49,10 @@ def get_list_of_cards(company_id):
     except Exception as e:
         return str(e)
 
-# Function -> Add funds to a company.    
+# Function -> Add funds to a company.
+# Parameters:
+#   company_id = integer
+#   funds = double    
 def add_funds(company_id, funds):
     if funds <= 0:
         return 'Invalid funds.'
@@ -56,6 +67,8 @@ def add_funds(company_id, funds):
             return str(e)
 
 # Function -> Get available spending balance of a card.
+# Parameters:
+#   card_id = integer
 def get_available_balance(card_id):
     try:
         card = Card.objects.get(pk=card_id)
@@ -64,6 +77,8 @@ def get_available_balance(card_id):
         return str(e)
 
 # Function -> Top-Up a card balance.
+# Parameters:
+#    card_id = integer
 def top_up(card_id):
     try:
         card = Card.objects.get(pk=card_id)
@@ -97,6 +112,10 @@ def top_up(card_id):
         return str(e)
 
 # Function -> Spend money on a restaurant with a card.
+# Parameters:
+#   card_id = integer
+#   spend_amount = double
+#   restaurant_id = integer
 def spend_money(card_id, spend_amount, restaurant_id):
     try:
         card = Card.objects.get(pk=card_id)
@@ -116,6 +135,8 @@ def spend_money(card_id, spend_amount, restaurant_id):
         return str(e)
 
 # Function -> Refund a purchase.
+# Parameters:
+#   transaction_id = integer
 def refund_purchase(transaction_id):
     try:
         # Get purchase information.
@@ -139,6 +160,8 @@ def refund_purchase(transaction_id):
         return str(e)
 
 # Function -> Get the list of all transactions of a card.
+# Parameters:
+#   card_id = integer
 def get_list_of_transactions(card_id):
     try:
         # Get all transactions for the card. (Top-Ups and Purchases. Refunds can also be added if requested).
@@ -153,6 +176,9 @@ def get_list_of_transactions(card_id):
         return str(e)
 
 # Function -> Get the list of most popular restaurants per month for a company.
+# Parameters:
+#   company_id = integer
+#   month = integer -> Accepts values between 1 to 12.
 def most_popular_restaurants(company_id, month):
     try:
         company = Company.objects.get(pk=company_id)
@@ -166,6 +192,8 @@ def most_popular_restaurants(company_id, month):
         return str(e)
     
 # Function -> Terminate a card.
+# Parameters:
+#   card_id = integer
 def terminate_card(card_id):
     try:
         # Delete the card object and refund its balance to the company.
