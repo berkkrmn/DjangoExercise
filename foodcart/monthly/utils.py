@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Sum
 from monthly.models import Company, Card, Transaction, Restaurant
 
 CITY_CENTER_CARD_TOP_UP = 500
@@ -15,16 +15,19 @@ def create_company(company_name):
 
 # Create a new card for a company function.
 def create_card(company_id, employee_name, contract_type):
-    try:
-        company = Company.objects.get(pk=company_id)
-        Card.objects.create(company=company, employee_name=employee_name, card_type=contract_type)
-        if contract_type == 'C':
-            return 'Created City Center Card for ' + company.company_name + ' - '+ employee_name
-        else:
-            return 'Created Small Town Card for ' + company.company_name + ' - '+ employee_name
-    except Exception as e:
-        return str(e)
-
+    if contract_type == 'S' | contract_type == 'C':
+        try:
+            company = Company.objects.get(pk=company_id)
+            Card.objects.create(company=company, employee_name=employee_name, card_type=contract_type)
+            if contract_type == 'C':
+                return 'Created City Center Card for ' + company.company_name + ' - '+ employee_name
+            else:
+                return 'Created Small Town Card for ' + company.company_name + ' - '+ employee_name
+        except Exception as e:
+            return str(e) 
+    else:
+        return 'Invalid contract_type.'
+        
 # Get list of cards of a company function.
 def get_list_of_cards(company_id):
     try:
@@ -119,15 +122,20 @@ def refund_purchase(transaction_id):
         refund_transaction = Transaction.objects.get(pk=transaction_id)
         card = refund_transaction.card
 
-        # Refund the amount to the card.
-        card.available_balance = card.available_balance + refund_transaction.amount
-        card.save()
+        
+        # Transaction must be purchase.
+        if refund_transaction.transaction_type != 'P':
+            return 'Transaction is not a purchase.'
+        else:
+            # Refund the amount to the card.
+            card.available_balance = card.available_balance + refund_transaction.amount
+            card.save()
 
-        # Convert purchase into a refund.
-        refund_transaction.transaction_type = 'R'
-        refund_transaction.save()
+            # Convert purchase into a refund.
+            refund_transaction.transaction_type = 'R'
+            refund_transaction.save()
 
-        return str(refund_transaction.amount) + ' is refunded to ' + card.employee_name
+            return str(refund_transaction.amount) + ' is refunded to ' + card.employee_name
     except Exception as e:
         return str(e)
 
@@ -147,12 +155,17 @@ def get_list_of_transactions(card_id):
 
 # Get the list of most popular restaurants per month for a company method.
 def most_popular_restaurants(company_id, month):
-    company = Company.objects.get(pk=company_id)
-    restaurants = Transaction.objects.filter(company=company).filter(transaction_date__month=month).filter(transaction_type='P').annotate(purchase_count=Count('id')).order_by('purchase_count')
+    try:
+        company = Company.objects.get(pk=company_id)
+        restaurants = Transaction.objects.filter(company=company).filter(transaction_date__month=month).filter(transaction_type='P').values('restaurant__restaurant_name').annotate(purchase_count=Count('restaurant'), total_amount=Sum('amount')).order_by('-purchase_count')    
+        popular_rest_list = list(restaurants)
+        if len(popular_rest_list) == 0:
+            return 'No purchases are found for ' + company.company_name
+        else:
+            return str(list(restaurants))
+    except Exception as e:
+        return str(e)
     
-
-    return str(list(restaurants.values()))
-
 # Terminate a card function.
 def terminate_card(card_id):
     try:
