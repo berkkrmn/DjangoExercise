@@ -122,7 +122,6 @@ def refund_purchase(transaction_id):
         refund_transaction = Transaction.objects.get(pk=transaction_id)
         card = refund_transaction.card
 
-        
         # Transaction must be purchase.
         if refund_transaction.transaction_type != 'P':
             return 'Transaction is not a purchase.'
@@ -162,7 +161,7 @@ def most_popular_restaurants(company_id, month):
         if len(popular_rest_list) == 0:
             return 'No purchases are found for ' + company.company_name
         else:
-            return str(list(restaurants))
+            return str(popular_rest_list)
     except Exception as e:
         return str(e)
     
