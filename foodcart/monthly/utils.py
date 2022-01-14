@@ -5,7 +5,7 @@ from monthly.models import Company, Card, Transaction, Restaurant
 CITY_CENTER_CARD_TOP_UP = 500
 SMALL_TOWN_CARD_TOP_UP = 300
 
-# Create a new company function.
+# Function -> Create a new company.
 def create_company(company_name):
     try:
         Company.objects.create(company_name=company_name)
@@ -13,7 +13,7 @@ def create_company(company_name):
     except Exception as e: 
         return str(e)
 
-# Create a new card for a company function.
+# Function -> Create a new card for a company.
 def create_card(company_id, employee_name, contract_type):
     if contract_type == 'S' | contract_type == 'C':
         try:
@@ -28,7 +28,7 @@ def create_card(company_id, employee_name, contract_type):
     else:
         return 'Invalid contract_type.'
         
-# Get list of cards of a company function.
+# Function -> Get the list of cards of a company.
 def get_list_of_cards(company_id):
     try:
         company = Company.objects.get(pk=company_id)
@@ -37,11 +37,11 @@ def get_list_of_cards(company_id):
         if len(list_of_cards) == 0:
             return 'No cards were found for the company ' + company.company_name
         else:
-            return str(list_of_cards)
+            return list_of_cards
     except Exception as e:
         return str(e)
 
-# Add funds to a company function.    
+# Function -> Add funds to a company.    
 def add_funds(company_id, funds):
     if funds <= 0:
         return 'Invalid funds.'
@@ -55,15 +55,15 @@ def add_funds(company_id, funds):
         except Exception as e:
             return str(e)
 
-# Get available spending balance of a card function.
+# Function -> Get available spending balance of a card.
 def get_available_balance(card_id):
     try:
         card = Card.objects.get(pk=card_id)
-        return str(card.available_balance)
+        return card.available_balance
     except Exception as e:
         return str(e)
 
-# Top-Up a card balance function.
+# Function -> Top-Up a card balance.
 def top_up(card_id):
     try:
         card = Card.objects.get(pk=card_id)
@@ -96,7 +96,7 @@ def top_up(card_id):
     except Exception as e:
         return str(e)
 
-# Spend money on a restaurant with a card function.
+# Function -> Spend money on a restaurant with a card.
 def spend_money(card_id, spend_amount, restaurant_id):
     try:
         card = Card.objects.get(pk=card_id)
@@ -115,7 +115,7 @@ def spend_money(card_id, spend_amount, restaurant_id):
     except Exception as e:
         return str(e)
 
-# Refund a purhcase function.
+# Function -> Refund a purchase.
 def refund_purchase(transaction_id):
     try:
         # Get purchase information.
@@ -138,21 +138,21 @@ def refund_purchase(transaction_id):
     except Exception as e:
         return str(e)
 
-# Get list of all transactions of a card function.
+# Function -> Get the list of all transactions of a card.
 def get_list_of_transactions(card_id):
     try:
-        # Get all transactions for the card. (Top-Ups and Purchases).
+        # Get all transactions for the card. (Top-Ups and Purchases. Refunds can also be added if requested).
         # Return if the card has at least one transaction recorded.
         card = Card.objects.get(pk=card_id)
         transactions_list = list(Transaction.objects.filter(card=card).filter(Q(transaction_type='T') | Q(transaction_type='P')).values())
         if len(transactions_list) == 0:
             return 'No transactions found.'
         else:
-            return str(transactions_list)
+            return transactions_list
     except Exception as e:
         return str(e)
 
-# Get the list of most popular restaurants per month for a company method.
+# Function -> Get the list of most popular restaurants per month for a company.
 def most_popular_restaurants(company_id, month):
     try:
         company = Company.objects.get(pk=company_id)
@@ -161,11 +161,11 @@ def most_popular_restaurants(company_id, month):
         if len(popular_rest_list) == 0:
             return 'No purchases are found for ' + company.company_name
         else:
-            return str(popular_rest_list)
+            return popular_rest_list
     except Exception as e:
         return str(e)
     
-# Terminate a card function.
+# Function -> Terminate a card.
 def terminate_card(card_id):
     try:
         # Delete the card object and refund its balance to the company.

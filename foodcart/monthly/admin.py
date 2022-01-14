@@ -9,6 +9,7 @@ class CompanyAdmin(admin.ModelAdmin):
 @admin.register(models.Card)
 class CardAdmin(admin.ModelAdmin):
     list_display = ['id','company','employee_name', 'card_type', 'available_balance']
+    list_filter = ['company', 'card_type']
     list_per_page = 50
 
 
@@ -20,5 +21,6 @@ class RestaurantAdmin(admin.ModelAdmin):
 @admin.register(models.Transaction)
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ['id','company','card','restaurant','transaction_name', 'transaction_date', 'transaction_type', 'amount']
+    list_filter = ['company', 'transaction_type']
     list_per_page = 50
 
